@@ -3,6 +3,19 @@ import streamlit as st
 import google.generativeai as genai
 from google.api_core import retry
 
+
+
+
+# Add this function to your imports
+def load_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+# In your app code, right before UI components:
+load_css("styles.css")
+
+
+
 # Configure Gemini with proper error handling
 try:
     # Get API key from Streamlit secrets (for deployment) or environment (for local)
@@ -158,4 +171,5 @@ if prompt := st.chat_input("Type your message here..."):
 if os.getenv("DEBUG_MODE"):
     st.sidebar.markdown("### Debug Info")
     st.sidebar.write("Current model: gemini-1.5-flash")
+
 
