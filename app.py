@@ -259,7 +259,7 @@ st.markdown("""
 
 # Chatbot UI and Logic
 st.title("⚡ Sajid-AI")
-st.caption("Powered by Google's fastest AI model")
+st.caption("Powered by fastest AI model")
 
 # Model indicator
 st.markdown('<div class="model-indicator">Model: Gemini 1.5 Flash</div>', unsafe_allow_html=True)
@@ -270,7 +270,7 @@ if "messages" not in st.session_state:
     # Add welcome message
     st.session_state.messages.append({
         "role": "assistant", 
-        "content": "Hello! I'm your AI assistant powered by Gemini 1.5 Flash. How can I help you today?"
+        "content": "Hello! I'm your AI assistant. How can I help you today?"
     })
 
 # Display chat messages
@@ -317,7 +317,8 @@ if prompt := st.chat_input("Type your message here..."):
 # Debug section (visible only in development)
 if os.getenv("DEBUG_MODE"):
     st.sidebar.markdown("### Debug Info")
-    st.sidebar.write("Current model: gemini-1.5-flash")
+    st.sidebar.write("Current model: 1.5-flash Model")
+
 
 
 
