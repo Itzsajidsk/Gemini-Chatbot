@@ -1,5 +1,11 @@
 import streamlit as st
 import google.generativeai as genai
+import os
+import streamlit as st
+import google.generativeai as genai
+
+# Configure Gemini using environment variable
+genai.configure(api_key=os.environ['GEMINI_API_KEY'])
 
 # Configure Gemini
 genai.configure(api_key='AIzaSyAZz7kRJv2shDmIRzn4wProovHGTqtGyKk')  # Replace with your actual API key
@@ -32,4 +38,5 @@ if prompt := st.chat_input("What's up?"):
     with st.chat_message("assistant"):
         st.markdown(response.text)
     # Add assistant response to chat history
+
     st.session_state.messages.append({"role": "assistant", "content": response.text})
