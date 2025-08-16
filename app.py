@@ -3,9 +3,7 @@ import streamlit as st
 import google.generativeai as genai
 
 
-@st.cache_resource
-def load_model():
-    return genai.GenerativeModel('gemini-1.0-pro')
+
 # Configure Gemini - using Streamlit secrets for deployment
 try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
@@ -15,7 +13,7 @@ except:
 
 # Initialize the model with correct name
 try:
-    model = genai.GenerativeModel('gemini-1.0-pro')
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
 except Exception as e:
     st.error(f"🚨 Failed to initialize model: {str(e)}")
     st.stop()
@@ -115,3 +113,4 @@ if prompt := st.chat_input("Type your message here..."):
     
     # Add bot response to chat history
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
+
