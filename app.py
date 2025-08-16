@@ -1,18 +1,35 @@
-import streamlit as st
-import google.generativeai as genai
 import os
 import streamlit as st
 import google.generativeai as genai
+from dotenv import load_dotenv
 
-# Configure Gemini using environment variable
-genai.configure(api_key=os.environ['AIzaSyAZz7kRJv2shDmIRzn4wProovHGTqtGyKk'])
+# Load API key from environment variable
+load_dotenv()  
 
 # Configure Gemini
-genai.configure(api_key='AIzaSyAZz7kRJv2shDmIRzn4wProovHGTqtGyKk')  # Replace with your actual API key
+genai.configure(api_key=os.getenv("AIzaSyAZz7kRJv2shDmIRzn4wProovHGTqtGyKk"))
 model = genai.GenerativeModel('gemini-pro')
 
-# Set up Streamlit app
-st.title("Gemini AI Chatbot")
+# --- UI Config ---
+st.set_page_config(
+    page_title="Gemini AI Chatbot",
+    page_icon="🤖",
+    layout="centered"
+)
+
+# Custom CSS for better UI
+st.markdown("""
+    <style>
+    .stChatInput {position: fixed; bottom: 2rem;}
+    .stChatMessage {border-radius: 15px; padding: 10px;}
+    .user-message {background-color: #e3f2fd;}
+    .bot-message {background-color: #f5f5f5;}
+    </style>
+""", unsafe_allow_html=True)
+
+# --- Chatbot Logic ---
+st.title("💬 Gemini AI Chatbot")
+st.caption("Ask me anything!")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -20,24 +37,29 @@ if "messages" not in st.session_state:
 
 # Display chat messages
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
+    with st.chat_message(message["role"], avatar="👤" if message["role"] == "user" else "🤖"):
         st.markdown(message["content"])
 
 # Accept user input
-if prompt := st.chat_input("What's up?"):
+if prompt := st.chat_input("Type your message..."):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
+    
     # Display user message
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="👤"):
         st.markdown(prompt)
     
     # Get Gemini response
-    response = model.generate_content(prompt)
+    with st.spinner("Thinking..."):
+        try:
+            response = model.generate_content(prompt)
+            bot_response = response.text
+        except Exception as e:
+            bot_response = f"⚠️ Error: {str(e)}"
     
-    # Display assistant response
-    with st.chat_message("assistant"):
-        st.markdown(response.text)
-    # Add assistant response to chat history
-
-    st.session_state.messages.append({"role": "assistant", "content": response.text})
-
+    # Display bot response
+    with st.chat_message("assistant", avatar="🤖"):
+        st.markdown(bot_response)
+    
+    # Add bot response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": bot_response})
