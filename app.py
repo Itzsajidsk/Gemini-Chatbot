@@ -262,7 +262,13 @@ st.title("⚡ Sajid-AI")
 st.caption("Powered by fastest AI model")
 
 # Model indicator
-st.markdown('<div class="model-indicator">Model: Gemini 1.5 Flash</div>', unsafe_allow_html=True)
+
+
+
+# st.markdown('<div class="model-indicator">Model: Gemini 1.5 Flash</div>', unsafe_allow_html=True)
+
+
+
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -318,6 +324,7 @@ if prompt := st.chat_input("Type your message here..."):
 if os.getenv("DEBUG_MODE"):
     st.sidebar.markdown("### Debug Info")
     st.sidebar.write("Current model: 1.5-flash Model")
+
 
 
 
