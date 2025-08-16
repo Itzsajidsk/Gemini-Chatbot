@@ -98,7 +98,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Chatbot UI and Logic
-st.title("⚡ Gemini 1.5 Flash Chatbot")
+st.title("⚡ Sajid-AI")
 st.caption("Powered by Google's fastest AI model")
 
 # Model indicator
