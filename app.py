@@ -22,7 +22,7 @@ except Exception as e:
 
 # Modern UI Configuration
 st.set_page_config(
-    page_title="✨ Gemini 1.5 Flash Chatbot",
+    page_title="✨ Flash Chatbot 1.5",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -158,3 +158,4 @@ if prompt := st.chat_input("Type your message here..."):
 if os.getenv("DEBUG_MODE"):
     st.sidebar.markdown("### Debug Info")
     st.sidebar.write("Current model: gemini-1.5-flash")
+
