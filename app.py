@@ -265,7 +265,7 @@ st.caption("Powered by fastest AI model")
 
 
 
- st.markdown('<div class="model-indicator">Developed by: Sajid</div>', unsafe_allow_html=True)
+ st.markdown('<div class="model-indicator">Model: Flask 1.5</div>', unsafe_allow_html=True)
 
 
 
