@@ -3,48 +3,33 @@ import streamlit as st
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load API key from environment variable
+load_dotenv()  
 
-# Configure Gemini - IMPORTANT: Use the correct model name
+# Configure Gemini
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel('gemini')
 
-# Initialize the model - Updated model name
-model = genai.GenerativeModel('gemini-1.0-pro')  # Changed from 'gemini-pro'
-
-# --- UI Configuration ---
+# --- UI Config ---
 st.set_page_config(
-    page_title="🤖 Gemini AI Chatbot",
-    page_icon="✨",
+    page_title="Gemini AI Chatbot",
+    page_icon="🤖",
     layout="centered"
 )
 
-# Custom CSS for beautiful UI
+# Custom CSS for better UI
 st.markdown("""
     <style>
     .stChatInput {position: fixed; bottom: 2rem;}
-    .stChatMessage {
-        border-radius: 15px;
-        padding: 12px;
-        margin: 8px 0;
-    }
-    [data-testid="stChatMessageUser"] {
-        background-color: #e3f2fd;
-        border-left: 4px solid #4b8bf5;
-    }
-    [data-testid="stChatMessageAssistant"] {
-        background-color: #f5f5f5;
-        border-left: 4px solid #2e7d32;
-    }
-    .stSpinner > div {
-        margin: 0 auto;
-    }
+    .stChatMessage {border-radius: 15px; padding: 10px;}
+    .user-message {background-color: #e3f2fd;}
+    .bot-message {background-color: #f5f5f5;}
     </style>
 """, unsafe_allow_html=True)
 
 # --- Chatbot Logic ---
 st.title("💬 Gemini AI Chatbot")
-st.caption("Powered by Google's latest AI technology")
+st.caption("Ask me anything!")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -52,12 +37,11 @@ if "messages" not in st.session_state:
 
 # Display chat messages
 for message in st.session_state.messages:
-    avatar = "👤" if message["role"] == "user" else "🤖"
-    with st.chat_message(message["role"], avatar=avatar):
+    with st.chat_message(message["role"], avatar="👤" if message["role"] == "user" else "🤖"):
         st.markdown(message["content"])
 
 # Accept user input
-if prompt := st.chat_input("Type your message here..."):
+if prompt := st.chat_input("Type your message..."):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
     
@@ -71,7 +55,7 @@ if prompt := st.chat_input("Type your message here..."):
             response = model.generate_content(prompt)
             bot_response = response.text
         except Exception as e:
-            bot_response = f"⚠️ Sorry, I encountered an error: {str(e)}"
+            bot_response = f"⚠️ Error: {str(e)}"
     
     # Display bot response
     with st.chat_message("assistant", avatar="🤖"):
