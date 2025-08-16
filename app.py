@@ -12,7 +12,7 @@ def load_css(file_name):
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 # In your app code, right before UI components:
-load_css("styles.css")
+load_css("style.css")
 
 
 
@@ -171,5 +171,6 @@ if prompt := st.chat_input("Type your message here..."):
 if os.getenv("DEBUG_MODE"):
     st.sidebar.markdown("### Debug Info")
     st.sidebar.write("Current model: gemini-1.5-flash")
+
 
 
