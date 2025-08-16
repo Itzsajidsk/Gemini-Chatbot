@@ -7,9 +7,9 @@ from google.api_core import retry
 
 
 # Add this function to your imports
-def load_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+# def load_css(file_name):
+#     with open(file_name) as f:
+#         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 # In your app code, right before UI components:
 load_css("style.css")
@@ -171,6 +171,7 @@ if prompt := st.chat_input("Type your message here..."):
 if os.getenv("DEBUG_MODE"):
     st.sidebar.markdown("### Debug Info")
     st.sidebar.write("Current model: gemini-1.5-flash")
+
 
 
 
