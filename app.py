@@ -1,37 +1,41 @@
 import os
 import streamlit as st
 import google.generativeai as genai
+from google.api_core import retry
 
-
-
-# Configure Gemini - using Streamlit secrets for deployment
+# Configure Gemini with proper error handling
 try:
-    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-except:
-    st.error("🔑 API key not configured. Please check your deployment settings.")
-    st.stop()
+    # Get API key from Streamlit secrets (for deployment) or environment (for local)
+    api_key = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        st.error("🔑 API key not configured. Please set GEMINI_API_KEY in secrets or environment variables.")
+        st.stop()
+    
+    genai.configure(api_key=api_key)
+    
+    # Use Gemini 1.5 Flash model
+    model = genai.GenerativeModel('gemini-1.5-flash')
 
-# Initialize the model with correct name
-try:
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
 except Exception as e:
-    st.error(f"🚨 Failed to initialize model: {str(e)}")
+    st.error(f"🔌 Connection Error: {str(e)}")
     st.stop()
 
-# --- Beautiful UI Configuration ---
+# Modern UI Configuration
 st.set_page_config(
-    page_title="✨ Gemini AI Chatbot",
-    page_icon="🤖",
-    layout="wide",
+    page_title="✨ Gemini 1.5 Flash Chatbot",
+    page_icon="⚡",
+    layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for modern UI
+# Enhanced CSS styling
 st.markdown("""
 <style>
-    /* Main container */
+    /* Main chat container */
     .main {
-        background-color: #f9f9f9;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1rem;
     }
     
     /* Chat messages */
@@ -46,71 +50,111 @@ st.markdown("""
     [data-testid="stChatMessageUser"] {
         background-color: #e6f2ff;
         border-left: 4px solid #4b8bf5;
+        margin-left: 15%;
     }
     
     /* Assistant messages */
     [data-testid="stChatMessageAssistant"] {
-        background-color: #ffffff;
+        background-color: #f8f9fa;
         border-left: 4px solid #2e7d32;
+        margin-right: 15%;
     }
     
     /* Input box */
     .stChatInput {
         position: fixed;
         bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        max-width: 700px;
         background: white;
         padding: 1rem;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 100;
     }
     
-    /* Spinner */
+    /* Spinner animation */
     .stSpinner > div {
         margin: 0 auto;
         color: #4b8bf5;
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    /* Flash model indicator */
+    .model-indicator {
+        position: fixed;
+        bottom: 5rem;
+        right: 1rem;
+        background: #f0f0f0;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        color: #666;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- Chatbot Logic ---
-st.title("💬 Gemini AI Chatbot")
-st.caption("Ask me anything and I'll do my best to help!")
+# Chatbot UI and Logic
+st.title("⚡ Gemini 1.5 Flash Chatbot")
+st.caption("Powered by Google's fastest AI model")
+
+# Model indicator
+st.markdown('<div class="model-indicator">Model: Gemini 1.5 Flash</div>', unsafe_allow_html=True)
 
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
+    # Add welcome message
     st.session_state.messages.append({
-        "role": "assistant",
-        "content": "Hello! I'm your Gemini AI assistant. How can I help you today?"
+        "role": "assistant", 
+        "content": "Hello! I'm your AI assistant powered by Gemini 1.5 Flash. How can I help you today?"
     })
 
 # Display chat messages
 for message in st.session_state.messages:
-    avatar = "👤" if message["role"] == "user" else "🤖"
+    avatar = "👤" if message["role"] == "user" else "⚡"
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-# Accept user input
+# User input handling
 if prompt := st.chat_input("Type your message here..."):
-    # Add user message to chat history
+    # Add user message to history
     st.session_state.messages.append({"role": "user", "content": prompt})
     
     # Display user message
     with st.chat_message("user", avatar="👤"):
         st.markdown(prompt)
     
-    # Get Gemini response
+    # Get AI response with retry logic
+    @retry.Retry()
+    def generate_response(prompt):
+        return model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.7,
+                top_p=0.9
+            )
+        )
+    
     with st.spinner("Thinking..."):
         try:
-            response = model.generate_content(prompt)
+            response = generate_response(prompt)
             bot_response = response.text
         except Exception as e:
-            bot_response = f"⚠️ Sorry, I encountered an error. Please try again. (Error: {str(e)})"
+            bot_response = f"⚠️ Sorry, I encountered an error. Please try again later. (Error: {str(e)})"
+            st.error(f"Detailed error: {str(e)}")
     
-    # Display bot response
-    with st.chat_message("assistant", avatar="🤖"):
+    # Display assistant response
+    with st.chat_message("assistant", avatar="⚡"):
         st.markdown(bot_response)
     
-    # Add bot response to chat history
+    # Add to chat history
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
 
+# Debug section (visible only in development)
+if os.getenv("DEBUG_MODE"):
+    st.sidebar.markdown("### Debug Info")
+    st.sidebar.write("Current model: gemini-1.5-flash")
