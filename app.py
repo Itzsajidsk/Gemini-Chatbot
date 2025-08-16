@@ -8,7 +8,7 @@ load_dotenv()
 
 # Configure Gemini
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.0-pro')
 
 # --- UI Config ---
 st.set_page_config(
@@ -63,4 +63,5 @@ if prompt := st.chat_input("Type your message..."):
     
     # Add bot response to chat history
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
+
 
