@@ -258,7 +258,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Chatbot UI and Logic
-st.title("⚡ Sajid-AI")
+st.title("⚡ Personal-Assistant")
 st.caption("Powered by fastest AI model")
 
 # Model indicator
@@ -324,6 +324,7 @@ if prompt := st.chat_input("Type your message here..."):
 if os.getenv("DEBUG_MODE"):
     st.sidebar.markdown("### Debug Info")
     st.sidebar.write("Current model: 1.5-flash Model")
+
 
 
 
